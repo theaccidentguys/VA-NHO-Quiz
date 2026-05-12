@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>The Accident Guys — VA NHO Quiz</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f5f6f7;color:#1a1a1a;min-height:100vh}
+header{background:#000;padding:18px 24px;display:flex;align-items:center;gap:12px}
+header h1{color:#fff;font-size:18px;font-weight:600;letter-spacing:.3px}
+header span{background:#dd6525;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px}
+.container{max-width:720px;margin:0 auto;padding:32px 20px}
+.card{background:#fff;border-radius:12px;border:1px solid #abb8c3;padding:32px;margin-bottom:20px}
+h2{font-size:20px;font-weight:600;margin-bottom:8px;color:#000}
+p.sub{color:#555;font-size:14px;line-height:1.6;margin-bottom:20px}
+input[type=text]{width:100%;padding:12px 14px;border:1.5px solid #abb8c3;border-radius:8px;font-size:15px;outline:none;transition:border .2s}
+input[type=text]:focus{border-color:#dd6525}
+.btn{display:inline-block;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:opacity .2s}
+.btn:hover{opacity:.88}
+.btn-primary{background:#dd6525;color:#fff}
+.btn-blue{background:#1182ac;color:#fff}
+.btn-green{background:#2e7d52;color:#fff}
+.btn-outline{background:#fff;color:#dd6525;border:2px solid #dd6525}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.progress-bar{background:#abb8c3;border-radius:20px;height:6px;margin-bottom:6px;overflow:hidden}
+.progress-fill{background:#dd6525;height:100%;border-radius:20px;transition:width .4s}
+.progress-label{font-size:12px;color:#666;margin-bottom:20px}
+
+.question-num{font-size:12px;font-weight:700;color:#dd6525;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.question-text{font-size:16px;font-weight:600;line-height:1.55;margin-bottom:22px;color:#111}
+
+.choices{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.choice{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-radius:8px;border:1.5px solid #abb8c3;cursor:pointer;transition:all .18s;background:#fff}
+.choice:hover{border-color:#dd6525;background:#fff0eb}
+.choice.selected{border-color:#dd6525;background:#fff0eb}
+.choice.correct{border-color:#2e7d52;background:#eaf4ee}
+.choice.incorrect{border-color:#cc2a00;background:#fff0eb}
+.choice input[type=radio]{accent-color:#dd6525;width:18px;height:18px;flex-shrink:0;margin-top:2px}
+.choice label{font-size:14px;line-height:1.5;cursor:pointer;color:#1a1a1a}
+
+.feedback{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:20px;line-height:1.5}
+.feedback.correct-fb{background:#eaf4ee;color:#2e7d52;border:1px solid #2e7d52}
+.feedback.incorrect-fb{background:#fff0eb;color:#cc2a00;border:1px solid #cc2a00}
+
+.nav-row{display:flex;justify-content:flex-end}
+
+.score-circle{width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 24px;border:6px solid}
+.score-circle.pass{border-color:#2e7d52;background:#eaf4ee;color:#2e7d52}
+.score-circle.fail{border-color:#cc2a00;background:#fff0eb;color:#cc2a00}
+.score-circle .score-num{font-size:30px;font-weight:700;line-height:1}
+.score-circle .score-pct{font-size:12px;margin-top:2px}
+.score-label{text-align:center;font-size:15px;font-weight:600;margin-bottom:6px}
+.score-sublabel{text-align:center;font-size:13px;color:#666;margin-bottom:24px}
+
+.summary-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px}
+.summary-table th{background:#000;color:#fff;padding:9px 12px;text-align:left;font-weight:600}
+.summary-table td{padding:9px 12px;border-bottom:1px solid #e8e8e8;vertical-align:top;line-height:1.45}
+.summary-table tr:last-child td{border-bottom:none}
+.tag-correct{background:#eaf4ee;color:#2e7d52;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.tag-incorrect{background:#fff0eb;color:#cc2a00;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+
+.action-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.attempt-badge{display:inline-block;background:#eef4ff;color:#1182ac;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:16px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Accident Guys</h1>
+  <span>VA NHO Quiz</span>
+</header>
+
+<div class="container">
+
+<!-- SCREEN 1: Name Entry -->
+<div id="screen-name" class="card">
+  <h2>Welcome to the NHO Quiz</h2>
+  <p class="sub">This quiz is part of your New Hire Orientation. Please enter your full name below to get started. You need a score of <strong>80% or higher</strong> to pass.</p>
+  <input type="text" id="name-input" placeholder="Enter your full name" style="margin-bottom:20px"/>
+  <br/>
+  <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<!-- SCREEN 2: Quiz -->
+<div id="screen-quiz" class="hidden">
+  <div style="margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
+    <span id="attempt-label" class="attempt-badge">Attempt 1</span>
+    <span style="font-size:12px;color:#666" id="q-counter"></span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="progress-label" id="progress-label"></div>
+
+  <div class="card">
+    <div class="question-num" id="q-num"></div>
+    <div class="question-text" id="q-text"></div>
+    <div class="choices" id="choices-container"></div>
+    <div class="feedback hidden" id="feedback"></div>
+    <div class="nav-row">
+      <button class="btn btn-primary" id="btn-next" onclick="nextAction()" disabled>Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: Results -->
+<div id="screen-results" class="hidden">
+  <div class="card" style="text-align:center;padding-bottom:24px">
+    <h2 style="margin-bottom:6px" id="result-name"></h2>
+    <p class="sub" style="margin-bottom:20px" id="result-sub"></p>
+    <div class="score-circle" id="score-circle">
+      <span class="score-num" id="score-num"></span>
+      <span class="score-pct" id="score-pct"></span>
+    </div>
+    <div class="score-label" id="score-label"></div>
+    <div class="score-sublabel" id="score-sublabel"></div>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="summary-table" id="summary-table">
+      <thead><tr><th>#</th><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead>
+      <tbody id="summary-body"></tbody>
+    </table>
+  </div>
+
+  <div class="action-row" id="action-row"></div>
+</div>
+
+</div>
+
+<script>
+const PASS_SCORE = 80;
+const HR_EMAIL = 'hrva@calltheaccidentguys.com';
+const NHO_LINK = 'https://tagvanho.my.canva.site/remaining-tasks';
+
+const questions = [
+  {q:'After how many days of employment does a VA begin accruing PTO?',choices:['30 days','60 days','90 days','120 days'],correct:2},
+  {q:'During the first year after the probationary period, how many paid days off does a VA accrue annually?',choices:['2 days','3 days','5 days','10 days'],correct:1},
+  {q:'What happens to unused PTO if a VA resigns with proper notice and on good terms?',choices:['It is forfeited','It is donated to HR','It is converted into sick leave','It is cashed out'],correct:3},
+  {q:'Which of the following is considered a paid U.S. holiday under the handbook?',choices:['Valentine\'s Day','Halloween','Labor Day','Easter Sunday'],correct:2},
+  {q:'On optional holidays like Christmas Eve, employees may:',choices:['Only work a full shift','Only take unpaid leave','Use PTO, take unpaid leave, or work reduced hours','Automatically receive paid leave'],correct:2},
+  {q:'After how many years of employment is a VA eligible for a paid birthday leave?',choices:['1 year','2 years','3 years','5 years'],correct:1},
+  {q:'What is the VA referral bonus amount?',choices:['$50','$75','$100','$150'],correct:2},
+  {q:'When is the referral bonus awarded?',choices:['Immediately after referral','After the referred VA completes 30 days','After the referred VA completes 90 days','At the end of the year'],correct:2},
+  {q:'After 90 days of employment, how much technology reimbursement is available?',choices:['$100','$150','$175','$250'],correct:2},
+  {q:'Which of the following is required for a technology reimbursement request?',choices:['A supervisor recommendation letter','A receipt and photo of equipment in use','A signed affidavit','A Zoom meeting with HR'],correct:1},
+  {q:'After how many months can a VA participate in the Government and Health Benefits Reimbursement Program?',choices:['3 months','6 months','9 months','12 months'],correct:1},
+  {q:'What is the reimbursement cap for employees with 24 to less than 36 months of employment?',choices:['$100','$134','$167','$200'],correct:1},
+  {q:'What is the deadline for reimbursement requests on timesheet day?',choices:['12:00 PM PST','1:00 PM PST','2:00 PM PST','5:00 PM PST'],correct:2},
+  {q:'What time zone should employees set in Hubstaff?',choices:['Eastern Standard Time','Central Standard Time','Mountain Standard Time','Pacific Standard Time'],correct:3},
+  {q:'How long can a computer remain idle before the Hubstaff timer stops?',choices:['5 minutes','10 minutes','15 minutes','20 minutes'],correct:1},
+  {q:'How much notice is generally required for time-off requests?',choices:['24 hours','3 days','1 week','2 weeks'],correct:3},
+  {q:'Which AUX label should employees use for meal breaks?',choices:['REST BREAK AUX','LUNCH AUX','MEAL BREAK AUX','BREAKTIME AUX'],correct:1},
+  {q:'Can employees use both the 20-minute rest break and the two separate 10-minute breaks on the same day?',choices:['Yes, anytime','Only with HR approval','Only during holidays','No, it is considered a policy violation'],correct:3},
+  {q:'What level offense is falsifying timekeeping records?',choices:['Level 1','Level 2','Level 3','Not listed'],correct:1},
+  {q:'What are the monitor requirements within 30 days of employment?',choices:['One 20-inch monitor','Two 22-inch monitors','Two 24-inch monitors or one 27-inch monitor','One laptop screen only'],correct:2}
+];
+
+let userName = '';
+let attempt = 1;
+let currentQ = 0;
+let userAnswers = [];
+let attempt1Answers = [];
+let attempt1Score = 0;
+let selectedChoice = null;
+let revealed = false;
+
+function show(id){document.querySelectorAll('#screen-name,#screen-quiz,#screen-results').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
+
+function startQuiz(){
+  const n = document.getElementById('name-input').value.trim();
+  if(!n){alert('Please enter your full name.');return;}
+  userName = n;
+  attempt = 1;
+  currentQ = 0;
+  userAnswers = [];
+  selectedChoice = null;
+  revealed = false;
+  show('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = questions[currentQ];
+  const total = questions.length;
+  document.getElementById('attempt-label').textContent = 'Attempt '+attempt;
+  document.getElementById('q-counter').textContent = (currentQ+1)+' / '+total;
+  document.getElementById('progress-fill').style.width=((currentQ+1)/total*100)+'%';
+  document.getElementById('progress-label').textContent = 'Question '+(currentQ+1)+' of '+total;
+  document.getElementById('q-num').textContent = 'Question '+(currentQ+1);
+  document.getElementById('q-text').textContent = q.q;
+  const letters = ['A','B','C','D'];
+  const cont = document.getElementById('choices-container');
+  cont.innerHTML = '';
+  q.choices.forEach((c,i)=>{
+    const div = document.createElement('div');
+    div.className='choice';
+    div.id='choice-'+i;
+    div.innerHTML=`<input type="radio" name="choice" id="r${i}" value="${i}"><label for="r${i}"><strong>${letters[i]}.</strong> ${c}</label>`;
+    div.onclick=()=>selectChoice(i);
+    cont.appendChild(div);
+  });
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('btn-next').disabled=true;
+  document.getElementById('btn-next').textContent = currentQ===total-1?'See Results':'Next';
+  selectedChoice=null;
+  revealed=false;
+}
+
+function selectChoice(i){
+  if(revealed)return;
+  selectedChoice=i;
+  document.querySelectorAll('.choice').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('choice-'+i).classList.add('selected');
+  document.getElementById('r'+i).checked=true;
+  document.getElementById('btn-next').disabled=false;
+}
+
+function nextAction(){
+  if(selectedChoice===null)return;
+  if(!revealed){
+    revealed=true;
+    const q=questions[currentQ];
+    const correct=q.correct;
+    const fb=document.getElementById('feedback');
+    const letters=['A','B','C','D'];
+    document.querySelectorAll('.choice').forEach((el,i)=>{
+      if(i===correct){el.classList.remove('selected');el.classList.add('correct');}
+      else if(i===selectedChoice&&selectedChoice!==correct){el.classList.remove('selected');el.classList.add('incorrect');}
+    });
+    userAnswers[currentQ]=selectedChoice;
+    const isCorrect=selectedChoice===correct;
+    fb.className='feedback '+(isCorrect?'correct-fb':'incorrect-fb');
+    fb.textContent=isCorrect?'Correct!':'Incorrect. The correct answer is '+letters[correct]+'. '+q.choices[correct];
+    fb.classList.remove('hidden');
+    if(currentQ<questions.length-1){
+      document.getElementById('btn-next').textContent='Next';
+    } else {
+      document.getElementById('btn-next').textContent='See Results';
+    }
+    return;
+  }
+  currentQ++;
+  if(currentQ<questions.length){revealed=false;selectedChoice=null;renderQuestion();}
+  else{showResults();}
+}
+
+function calcScore(answers){
+  let correct=0;
+  answers.forEach((a,i)=>{if(a===questions[i].correct)correct++;});
+  return Math.round(correct/questions.length*100);
+}
+
+function showResults(){
+  const score=calcScore(userAnswers);
+  const passed=score>=PASS_SCORE;
+
+  if(attempt===1){
+    attempt1Score=score;
+    attempt1Answers=[...userAnswers];
+  }
+
+  let finalScore=score;
+  let finalAnswers=userAnswers;
+  let showAttempt=attempt;
+
+  if(!passed&&attempt===1){
+    // offer retry
+    renderResultsScreen(score,userAnswers,false,true);
+    return;
+  }
+
+  if(attempt===2){
+    if(score>attempt1Score){
+      finalScore=score;finalAnswers=userAnswers;showAttempt=2;
+    } else {
+      finalScore=attempt1Score;finalAnswers=attempt1Answers;showAttempt=1;
+    }
+  }
+
+  renderResultsScreen(finalScore,finalAnswers,passed,false,showAttempt,attempt===2);
+}
+
+function renderResultsScreen(score,answers,passed,offerRetry,bestAttempt,bothDone){
+  show('screen-results');
+  document.getElementById('result-name').textContent = userName;
+
+  const circle=document.getElementById('score-circle');
+  circle.className='score-circle '+(passed?'pass':'fail');
+  document.getElementById('score-num').textContent=score+'%';
+  document.getElementById('score-pct').textContent=passed?'PASSED':'FAILED';
+
+  if(offerRetry){
+    document.getElementById('result-sub').textContent='Attempt 1 — you did not reach the passing score of 80%. You have one more attempt.';
+    document.getElementById('score-label').textContent='Score: '+score+'%';
+    document.getElementById('score-sublabel').textContent='You need 80% or higher to pass.';
+  } else if(bothDone){
+    document.getElementById('result-sub').textContent='Both attempts completed. Your best score is shown below.';
+    document.getElementById('score-label').textContent=(passed?'Congratulations! You passed.':'You did not pass.')+' Best score from Attempt '+bestAttempt+'.';
+    document.getElementById('score-sublabel').textContent=passed?'Well done, '+userName+'!':'Keep learning and reviewing the handbook.';
+  } else {
+    document.getElementById('result-sub').textContent='Attempt 1';
+    document.getElementById('score-label').textContent='Congratulations! You passed.';
+    document.getElementById('score-sublabel').textContent='Great job, '+userName+'!';
+  }
+
+  // Summary table
+  const tbody=document.getElementById('summary-body');
+  tbody.innerHTML='';
+  const letters=['A','B','C','D'];
+  answers.forEach((a,i)=>{
+    const q=questions[i];
+    const isCorrect=a===q.correct;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${i+1}</td><td>${q.q}</td><td>${letters[a]}. ${q.choices[a]}</td><td>${letters[q.correct]}. ${q.choices[q.correct]}</td><td><span class="${isCorrect?'tag-correct':'tag-incorrect'}">${isCorrect?'Correct':'Incorrect'}</span></td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Action buttons
+  const row=document.getElementById('action-row');
+  row.innerHTML='';
+
+  if(offerRetry){
+    const rb=document.createElement('button');
+    rb.className='btn btn-outline';rb.textContent='Retry Quiz';
+    rb.onclick=()=>{
+      attempt=2;currentQ=0;userAnswers=[];selectedChoice=null;revealed=false;
+      show('screen-quiz');renderQuestion();
+    };
+    row.appendChild(rb);
+  }
+
+  // Submit to HR
+  const hb=document.createElement('button');
+  hb.className='btn btn-blue';hb.textContent='Submit Results to HR';
+  hb.onclick=()=>submitToHR(score,answers,offerRetry,bothDone,bestAttempt);
+  row.appendChild(hb);
+
+  if(!offerRetry){
+    const cb=document.createElement('button');
+    cb.className='btn btn-green';cb.textContent='Continue NHO →';
+    cb.onclick=()=>window.open(NHO_LINK,'_blank');
+    row.appendChild(cb);
+  }
+}
+
+function submitToHR(score,answers,offerRetry,bothDone,bestAttempt){
+  const letters=['A','B','C','D'];
+  const passed=score>=PASS_SCORE;
+  let attemptNote='';
+  if(bothDone) attemptNote=`Best score recorded from Attempt ${bestAttempt} out of 2 attempts.\n`;
+  else if(offerRetry) attemptNote='Score from Attempt 1 (retry not yet taken).\n';
+  else attemptNote='Score from Attempt 1.\n';
+
+  let incorrect=answers.map((a,i)=>a!==questions[i].correct?i:-1).filter(i=>i>=0);
+  let incorrectLines=incorrect.length===0?'All answers correct!\n':incorrect.map(i=>`Q${i+1}: ${questions[i].q}\n  Your answer: ${letters[answers[i]]}. ${questions[i].choices[answers[i]]}\n  Correct answer: ${letters[questions[i].correct]}. ${questions[i].choices[questions[i].correct]}`).join('\n\n');
+
+  let allLines=answers.map((a,i)=>{
+    const q=questions[i];const ok=a===q.correct;
+    return `Q${i+1}: ${q.q}\n  Answer: ${letters[a]}. ${q.choices[a]} — ${ok?'CORRECT':'INCORRECT (Correct: '+letters[q.correct]+'. '+q.choices[q.correct]+')'}`;
+  }).join('\n\n');
+
+  const body=`NHO QUIZ RESULTS\n================\nName: ${userName}\nScore: ${score}% — ${passed?'PASSED':'FAILED'}\n${attemptNote}\n--- INCORRECT ANSWERS ---\n${incorrectLines}\n\n--- FULL ANSWER SUMMARY ---\n${allLines}`;
+  const subject=encodeURIComponent(`${userName} | NHO Quiz Result`);
+  const bodyEnc=encodeURIComponent(body);
+  window.location.href=`mailto:${HR_EMAIL}?subject=${subject}&body=${bodyEnc}`;
+}
+</script>
+</body>
+</html>
